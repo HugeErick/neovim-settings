@@ -24,13 +24,13 @@ for _, lsp in ipairs(servers) do
           diagnostics = {
             disabled = {}, -- Disable specific diagnostics if needed
           },
-          checkOnSave = {
+          checkOnSave = true, -- Enable check on save
+          check = {
             command = "clippy", -- Use clippy for additional checks
           },
           cargo = {
             allFeatures = true, -- Enable all features for workspace-wide checks
           },
-          -- Add custom lint overrides
           rustfmt = {
             extraArgs = { "--config", "max_width=100" }, -- Example of rustfmt config
           },
