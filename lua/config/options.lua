@@ -80,3 +80,7 @@ vim.keymap.set("n", "<leader>sl", function()
     vim.opt.spelllang = next_lang
     print("Switched spell language to " .. next_lang)
 end, { desc = "Switch Spell Language (English/Spanish)" })
+
+-- Change windows easier
+vim.keymap.set('n', '<leader>d', '<C-w>w', { noremap = true })
+
