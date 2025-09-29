@@ -1,51 +1,42 @@
-local lspconfig = require("lspconfig")
-local capabilities = require("cmp_nvim_lsp").default_capabilities()
+-- lsp.lua  ––  new 0.11 API version
+local capabilities = require('cmp_nvim_lsp').default_capabilities()
 
--- Example setup for a few languages
-local servers = {
-  "lua_ls",
-  "ts_ls",
-  "pyright",
-  "gopls",
-  "rust_analyzer",
-  "clangd",
-  "texlab",
-  "html",
-  "tailwindcss",
-}
+-- Helper: enable a server with the new API
+local function enable(name, opts)
+  opts = opts or {}
+  opts.capabilities = capabilities
+  vim.lsp.config[name] = opts
+  vim.lsp.enable(name)
+end
 
-for _, lsp in ipairs(servers) do
-  if lsp == "rust_analyzer" then
-    -- Special configuration for rust-analyzer
-    lspconfig[lsp].setup({
-      capabilities = capabilities,
-      settings = {
-        ["rust-analyzer"] = {
-          diagnostics = {
-            disabled = {}, -- Disable specific diagnostics if needed
-          },
-          checkOnSave = true, -- Enable check on save
-          check = {
-            command = "clippy", -- Use clippy for additional checks
-          },
-          cargo = {
-            allFeatures = true, -- Enable all features for workspace-wide checks
-          },
-          rustfmt = {
-            extraArgs = { "--config", "max_width=100" }, -- Example of rustfmt config
-          },
-          lint = {
-            overrideCommand = {
-              "cargo", "clippy", "--", "-A", "clippy::non_snake_case"
-            },
-          },
+-- Default servers
+for _, srv in ipairs {
+  'lua_ls',
+  'ts_ls',
+  'pyright',
+  'gopls',
+  'clangd',
+  'texlab',
+  'html',
+  'tailwindcss',
+} do
+  enable(srv)
+end
+
+-- rust-analyzer with custom settings
+enable('rust_analyzer', {
+  settings = {
+    ['rust-analyzer'] = {
+      diagnostics = { disabled = {} },
+      checkOnSave  = true,
+      check        = { command = 'clippy' },
+      cargo        = { allFeatures = true },
+      rustfmt      = { extraArgs = { '--config', 'max_width=100' } },
+      lint = {
+        overrideCommand = {
+          'cargo', 'clippy', '--', '-A', 'clippy::non_snake_case',
         },
       },
-    })
-  else
-    -- Default configuration for other language servers
-    lspconfig[lsp].setup({
-      capabilities = capabilities,
-    })
-  end
-end
+    },
+  },
+})
