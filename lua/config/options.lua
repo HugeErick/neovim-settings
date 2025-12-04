@@ -47,6 +47,17 @@ vim.api.nvim_create_autocmd("FileType", {
   end,
 })
 
+-- For Makefiles, use actual tabs but display as 2 spaces
+vim.api.nvim_create_autocmd("FileType", {
+  pattern = "make",
+  callback = function()
+    vim.opt_local.expandtab = false    -- Use actual tabs
+    vim.opt_local.tabstop = 2          -- Display tabs as 2 spaces wide
+    vim.opt_local.shiftwidth = 2       -- >> and << shift by 2 spaces visually
+    vim.opt_local.softtabstop = 2      -- Makes backspace behave properly
+  end,
+})
+
 -- key remaps
 -- vim.api.nvim_set_keymap('n', '<leader>e', ':Neotree focus<CR>', { noremap = true, silent = true })
 -- Toggle Neotree focus/close

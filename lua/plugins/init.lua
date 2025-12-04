@@ -41,13 +41,10 @@ require("lazy").setup({
     lazy = false,
     config = function()
       -- Set PDF viewer to Atril
-      -- vim.g.vimtex_view_method = 'atril'
-
+      vim.g.vimtex_view_method = 'zathura'
       -- Use Arara as the compiler
-      vim.g.vimtex_compiler_method = 'arara'
+      vim.g.vimtex_compiler_method = 'latexmk'
 
-      -- Ensure compilation keybinding is ',ll'
-      vim.g.maplocalleader = ','
     end,
   },
   -- LSP Enhancements
