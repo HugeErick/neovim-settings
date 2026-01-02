@@ -1,4 +1,4 @@
--- Bootstrap Lazy.nvim
+-- bootstrap Lazy.nvim
 local lazypath = vim.fn.stdpath("data") .. "/lazy/lazy.nvim"
 if not vim.loop.fs_stat(lazypath) then
   vim.fn.system({
@@ -12,9 +12,10 @@ if not vim.loop.fs_stat(lazypath) then
 end
 vim.opt.rtp:prepend(lazypath)
 
--- Load plugins
+-- load plugins
 require("lazy").setup({
-  -- File management
+
+  -- file management
   {
     "nvim-neo-tree/neo-tree.nvim",
     branch = "v3.x",
@@ -26,32 +27,70 @@ require("lazy").setup({
     config = function()
       require("neo-tree").setup({
         window = {
-          width = 12,
+          width = 14,
+        },
+        filesystem = {
+          use_libuv_file_watcher = true,
+
+          follow_current_file = {
+            enabled = true,
+          },
         },
       })
+
+      -- startup
+      vim.api.nvim_create_autocmd("VimEnter", {
+        callback = function()
+          vim.cmd("Neotree show")
+        end,
+      })
+
+      -- keymap(s)
       vim.keymap.set("n", "<C-t>", ":Neotree toggle<CR>", { silent = true })
     end,
   },
-  -- Fuzzy Finder
+
+  -- fuzzy finder
   { "junegunn/fzf", dependencies = { "junegunn/fzf", build = "./install --all" } },
-  { "junegunn/fzf.vim" },
-  -- LaTeX Support
+  {
+    "junegunn/fzf.vim",
+    config = function()
+
+      vim.keymap.set("n", "<leader>f", ":Files ../<CR>", { desc = "FZF search 1 levels up" })
+
+      vim.keymap.set("n", "<leader>F", ":Files<CR>", { desc = "FZF search current dir" })
+
+      -- search through the content of open buffers
+      vim.keymap.set("n", "<leader>fb", ":Buffers<CR>", { desc = "FZF find buffers" })
+
+      -- search lines in the current buffer
+      vim.keymap.set("n", "<leader>fl", ":BLines<CR>", { desc = "FZF find lines" })
+    end,
+
+  },
+  -- LaTeX support
   {
     "lervag/vimtex",
     lazy = false,
     config = function()
-      -- Set PDF viewer to Atril
+      -- set PDF viewer to Atril
       vim.g.vimtex_view_method = 'zathura'
-      -- Use Arara as the compiler
+      -- use Arara as the compiler
       vim.g.vimtex_compiler_method = 'latexmk'
 
     end,
   },
-  -- LSP Enhancements
+
+  -- LSP enhancements
   {
     "nvimdev/lspsaga.nvim",
     config = function()
-      require("lspsaga").setup({})
+      require("lspsaga").setup({
+        -- disabling lightbulb
+        lightbulb = {
+          enable = false,
+        }
+      })
     end,
     dependencies = {
       "nvim-treesitter/nvim-treesitter",
@@ -73,10 +112,10 @@ require("lazy").setup({
 
   -- LSP config and autocompletion
   {
-    "neovim/nvim-lspconfig", -- Quick LSP setup
+    "neovim/nvim-lspconfig", -- quick LSP setup
   },
   {
-    "williamboman/mason.nvim", -- Manage external tools like language servers
+    "williamboman/mason.nvim", -- manage external tools like language servers
     build = ":MasonUpdate",
     config = function()
       require("mason").setup()
@@ -84,13 +123,13 @@ require("lazy").setup({
   },
 
   {
-    "hrsh7th/nvim-cmp", -- Autocompletion plugin
+    "hrsh7th/nvim-cmp", -- autocompletion plugin
     dependencies = {
       "hrsh7th/cmp-nvim-lsp", -- LSP source for nvim-cmp
-      "hrsh7th/cmp-buffer", -- Buffer source
-      "hrsh7th/cmp-path", -- Filesystem paths
-      "saadparwaiz1/cmp_luasnip", -- Snippets source
-      "L3MON4D3/LuaSnip", -- Snippet engine
+      "hrsh7th/cmp-buffer", -- buffer source
+      "hrsh7th/cmp-path", -- filesystem paths
+      "saadparwaiz1/cmp_luasnip", -- snippets source
+      "L3MON4D3/LuaSnip", -- snippet engine
     },
     config = function()
       local cmp = require("cmp")
@@ -110,28 +149,86 @@ require("lazy").setup({
           { name = "nvim_lsp" },
           { name = "luasnip" },
         }, {
-            { name = "buffer" },
-            { name = "path" },
-          }),
+          { name = "buffer" },
+          { name = "path" },
+        }),
       })
     end,
   },
 
-  -- Colorscheme (Replaced kanagawa with tokyonight)
+  -- colorschemes with persistence
   {
     "folke/tokyonight.nvim",
+    lazy = false,
+    dependencies = {
+      "catppuccin/nvim",
+      "rose-pine/neovim",
+    },
     config = function()
-      vim.cmd("colorscheme tokyonight")
+      local themes = { "tokyonight", "catppuccin-mocha", "rose-pine", "catppuccin-latte" }
+
+      -- path where the theme name will be saved
+      local theme_cache = vim.fn.stdpath("data") .. "/last_theme.txt"
+
+      -- function to read the saved theme
+      local function get_saved_theme()
+        local f = io.open(theme_cache, "r")
+        if f then
+          local content = f:read("*all"):gsub("%s+", "")
+          f:close()
+          for _, t in ipairs(themes) do
+            if t == content then return content end
+          end
+        end
+        return "tokyonight" -- default if no file exists
+      end
+
+      -- function to save the theme
+      local function save_theme(name)
+        local f = io.open(theme_cache, "w")
+        if f then
+          f:write(name)
+          f:close()
+        end
+      end
+
+      -- initialize theme index based on saved theme
+      local saved = get_saved_theme()
+      local current_theme_idx = 1
+      for i, v in ipairs(themes) do
+        if v == saved then current_theme_idx = i break end
+      end
+
+      -- define the toggle function
+      _G.next_theme = function()
+        current_theme_idx = current_theme_idx % #themes + 1
+        local new_theme = themes[current_theme_idx]
+
+        vim.cmd("colorscheme " .. new_theme)
+        save_theme(new_theme) -- SAVE TO DISK
+
+        vim.api.nvim_command('redraw')
+        print("HD Theme Switched to: " .. new_theme)
+      end
+
+      -- set the keymap
+      vim.keymap.set("n", "<leader>th", _G.next_theme, { desc = "Cycle Themes" })
+
+      -- apply the saved theme on startup
+      vim.schedule(function()
+        pcall(vim.cmd, "colorscheme " .. saved)
+      end)
     end,
   },
-  -- Statusline
+
+  -- statusline
   {
     "nvim-lualine/lualine.nvim",
     dependencies = { "nvim-tree/nvim-web-devicons" },
     config = function()
       require("lualine").setup({
         options = {
-          theme = "tokyonight", -- Updated to match the colorscheme
+          theme = "auto", -- IMPORTANT: this makes the bar change color with the theme
           icons_enabled = true,
           component_separators = { left = "", right = "" },
           section_separators = { left = "", right = "" },
@@ -139,15 +236,17 @@ require("lazy").setup({
       })
     end,
   },
+
+
   {
     "windwp/nvim-autopairs",
     event = "InsertEnter",
     config = function()
       require("nvim-autopairs").setup({
-        check_ts = true, -- Use treesitter to check for pairs
+        check_ts = true, -- use treesitter to check for pairs
       })
 
-      -- Integrate with nvim-cmp
+      -- integrate with nvim-cmp
       local cmp_autopairs = require("nvim-autopairs.completion.cmp")
       local cmp = require("cmp")
       cmp.event:on("confirm_done", cmp_autopairs.on_confirm_done())
@@ -155,7 +254,7 @@ require("lazy").setup({
     dependencies = { "hrsh7th/nvim-cmp" },
   },
 
-  -- Bufferline (Cokeline)
+  -- bufferline (Cokeline)
   {
     "willothy/nvim-cokeline",
     dependencies = {
@@ -166,21 +265,21 @@ require("lazy").setup({
     config = function()
       local map = vim.api.nvim_set_keymap
       local opts = { noremap = true, silent = true }
-      -- Navigate buffers
+      -- navigate buffers
       map("n", "<Tab>", "<Plug>(cokeline-focus-next)", opts)
       map("n", "<S-Tab>", "<Plug>(cokeline-focus-prev)", opts)
-      -- Move buffers
+      -- move buffers
       map("n", "<leader>bn", "<Plug>(cokeline-switch-next)", opts)
       map("n", "<leader>bp", "<Plug>(cokeline-switch-prev)", opts)
-      -- Close buffer
+      -- close buffer
       map("n", "<leader>bd", ":bd<CR>", opts)
-      -- Jump to buffer by index (1-9)
+      -- jump to buffer by index (1-9)
       for i = 1, 9 do
         map("n", string.format("<leader>%d", i), string.format("<Plug>(cokeline-focus-%d)", i), opts)
       end
     end
   },
-  -- nvim-treesitter (Added for syntax highlighting and more)
+  -- nvim-treesitter 
   {
     "nvim-treesitter/nvim-treesitter",
     build = ":TSUpdate",
@@ -211,6 +310,47 @@ require("lazy").setup({
       })
     end,
   },
+
+
+  {
+    "toppair/peek.nvim",
+    event = { "VeryLazy" },
+    build = "deno task --quiet build:fast",
+    config = function()
+      require("peek").setup({
+        app = {'firefox'}
+      })
+      vim.api.nvim_create_user_command("PeekOpen", require("peek").open, {})
+      vim.api.nvim_create_user_command("PeekClose", require("peek").close, {})
+    end,
+  },
+
 })
 
 
+-- close the current buffer without closing the window or messed up layout
+vim.keymap.set("n", "<leader>q", function()
+  -- try to get the neo-tree delete function safely
+  local has_neotree, nt_utils = pcall(require, "neo-tree.utils")
+  local bd = has_neotree and nt_utils.delete_buffer or nil
+
+  if vim.bo.buftype == "terminal" then
+    vim.cmd("bdelete!")
+  elseif bd then
+    -- if Neo-tree is loaded and has the function, use it
+    bd()
+  else
+    -- fallback: Use standard buffer delete if Neo-tree isn't ready
+    vim.cmd("bdelete")
+  end
+end, { desc = "Close Buffer safely" })
+
+vim.api.nvim_create_autocmd("BufEnter", {
+  group = vim.api.nvim_create_augroup("NeoTreeClose", { clear = true }),
+  callback = function()
+    local layout = vim.api.nvim_call_function("winlayout", {})
+    if layout[1] == "leaf" and vim.bo[vim.api.nvim_win_get_buf(layout[2])].filetype == "neo-tree" and vim.api.nvim_tabpage_list_wins(0)[2] == nil then
+      vim.cmd("confirm quit")
+    end
+  end,
+})

@@ -1,7 +1,7 @@
--- Load options
+-- load options
 require("config.options")
 
--- Load plugins
+-- load plugins
 require("plugins.init")
 
 -- LSP

@@ -1,41 +1,36 @@
--- lsp.lua  ––  new 0.11 API version
 local capabilities = require('cmp_nvim_lsp').default_capabilities()
 
--- Helper: enable a server with the new API
-local function enable(name, opts)
-  opts = opts or {}
-  opts.capabilities = capabilities
-  vim.lsp.config[name] = opts
+-- define a function to setup servers properly
+local function setup_server(name, config)
+  config = config or {}
+  config.capabilities = capabilities
+
+  vim.lsp.config(name, config)
   vim.lsp.enable(name)
 end
 
--- Default servers
-for _, srv in ipairs {
-  'lua_ls',
-  'ts_ls',
-  'pyright',
-  'gopls',
-  'clangd',
-  'texlab',
-  'html',
-  'tailwindcss',
-} do
-  enable(srv)
+-- simple servers
+local servers = { 'lua_ls', 'ts_ls', 'pyright', 'gopls', 'html', 'tailwindcss' }
+for _, srv in ipairs(servers) do
+  setup_server(srv)
 end
 
--- rust-analyzer with custom settings
-enable('rust_analyzer', {
+setup_server('clangd', {
+  cmd = { "clangd", "--background-index", "--clang-tidy", "--fallback-style=Microsoft" }
+})
+
+-- fixing Rust-Analyzer (Cargo dependencies)
+setup_server('rust_analyzer', {
   settings = {
     ['rust-analyzer'] = {
-      diagnostics = { disabled = {} },
-      checkOnSave  = true,
-      check        = { command = 'clippy' },
-      cargo        = { allFeatures = true },
-      rustfmt      = { extraArgs = { '--config', 'max_width=100' } },
-      lint = {
-        overrideCommand = {
-          'cargo', 'clippy', '--', '-A', 'clippy::non_snake_case',
-        },
+      cargo = { 
+        allFeatures = true, 
+        loadOutDirsFromCheck = true 
+      },
+      procMacro = { enable = true },
+      checkOnSave = true,
+      check = {
+        command = "clippy",
       },
     },
   },
