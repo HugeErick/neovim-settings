@@ -25,13 +25,47 @@ require("lazy").setup({
       "MunifTanjim/nui.nvim",
     },
     config = function()
+      local function focus_buffer_if_open(state)
+        local node = state.tree:get_node()
+        if node.type ~= "file" then
+          return false
+        end
+
+        local full_path = node:get_id()
+        local wins = vim.api.nvim_list_wins()
+
+        for _, win in ipairs(wins) do
+          local buf = vim.api.nvim_win_get_buf(win)
+          if vim.api.nvim_buf_get_name(buf) == full_path then
+            vim.api.nvim_set_current_win(win)
+            return true
+          end
+        end
+        return false
+      end
+
       require("neo-tree").setup({
         window = {
-          width = 14,
+          width = 15,
+          mappings = {
+            ["<cr>"] = function(state)
+              if focus_buffer_if_open(state) then
+                return 
+              end
+              require("neo-tree.sources.filesystem.commands").open(state)
+            end,
+
+            ["t"] = function(state)
+              if focus_buffer_if_open(state) then
+                return
+              end
+              require("neo-tree.sources.filesystem.commands").open_tabnew(state)
+            end,
+          },
         },
         filesystem = {
           use_libuv_file_watcher = true,
-
+          bind_to_cwd = false, 
           follow_current_file = {
             enabled = true,
           },
@@ -45,9 +79,17 @@ require("lazy").setup({
         end,
       })
 
+      -- show neo-tree automatically in every new tab
+      vim.api.nvim_create_autocmd("TabNewEntered", {
+        callback = function()
+          vim.cmd("Neotree show")
+        end,
+      })
+
       -- keymap(s)
       vim.keymap.set("n", "<C-t>", ":Neotree toggle<CR>", { silent = true })
     end,
+    -- end of neo-tree
   },
 
   -- fuzzy finder
@@ -149,9 +191,9 @@ require("lazy").setup({
           { name = "nvim_lsp" },
           { name = "luasnip" },
         }, {
-          { name = "buffer" },
-          { name = "path" },
-        }),
+            { name = "buffer" },
+            { name = "path" },
+          }),
       })
     end,
   },
@@ -311,6 +353,29 @@ require("lazy").setup({
     end,
   },
 
+  {
+    "lukas-reineke/indent-blankline.nvim",
+    main = "ibl",
+    config = function()
+      -- Define the highlight groups to use for the background blocks
+      local highlight = {
+        "CursorColumn",
+        "Whitespace",
+      }
+
+      require("ibl").setup({
+        indent = { 
+          highlight = highlight, 
+          char = "" -- This removes the dotted character
+        },
+        whitespace = {
+          highlight = highlight,
+          remove_blankline_trail = false,
+        },
+        scope = { enabled = false }, -- Turns off the active scope underline
+      })
+    end,
+  },
 
   {
     "toppair/peek.nvim",

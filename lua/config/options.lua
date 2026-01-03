@@ -10,6 +10,8 @@ vim.cmd("filetype plugin indent on") -- corrected line (Vimscript command)
 vim.opt.autoindent = true
 vim.opt.tabstop = 2
 vim.opt.shiftwidth = 2
+vim.opt.autoindent = true
+vim.opt.indentexpr = "v:lua.vim.treesitter.indent()"
 vim.opt.smarttab = true
 vim.opt.softtabstop = 2
 vim.opt.expandtab = true -- ensure spaces are used instead of tabs
@@ -29,6 +31,7 @@ vim.opt.sidescrolloff = 6
 vim.opt.sidescroll = 1
 vim.opt.hlsearch = false
 vim.opt.ttimeoutlen = 100
+vim.opt.switchbuf = "useopen,usetab"
 
 -- italics
 vim.cmd([[let &t_ZH="\e[3m"]])
@@ -95,3 +98,11 @@ end, { desc = "Switch Spell Language (English/Spanish)" })
 vim.keymap.set('n', '<leader>d', '<C-w>w', { noremap = true })
 
 
+-- smart dd: Don't yank empty lines into the default register
+vim.keymap.set("n", "dd", function()
+  if vim.api.nvim_get_current_line():match("^%s*$") then
+    return '"_dd'
+  else
+    return "dd"
+  end
+end, { expr = true, desc = "Smart delete line" })

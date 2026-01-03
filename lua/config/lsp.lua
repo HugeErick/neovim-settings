@@ -31,6 +31,7 @@ setup_server('rust_analyzer', {
       checkOnSave = true,
       check = {
         command = "clippy",
+        extraArgs = { "--", "-A", "clippy::upper_case_acronyms" },
       },
     },
   },
