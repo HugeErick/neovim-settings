@@ -10,9 +10,18 @@ local function setup_server(name, config)
 end
 
 -- simple servers
-local servers = { 'lua_ls', 'ts_ls', 'pyright', 'gopls', 'html', 'tailwindcss' }
+local servers = { 'lua_ls', 'ts_ls', 'pyright', 'gopls', 'html', 'tailwindcss', "svelte", "emmet_ls" }
 for _, srv in ipairs(servers) do
-  setup_server(srv)
+
+  if srv == "emmet_ls" then
+    setup_server(srv, {
+      filetypes = {
+        "html", "typescriptreact", "javascriptreact", "css", "sass", "scss", "less", "svelte"
+      },
+    })
+  else 
+    setup_server(srv)
+  end
 end
 
 setup_server('clangd', {

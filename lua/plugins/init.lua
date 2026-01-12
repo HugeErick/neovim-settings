@@ -1,3 +1,5 @@
+vim.env.PATH = vim.fn.stdpath("data") .. "/mason/bin:" .. vim.env.PATH
+
 -- bootstrap Lazy.nvim
 local lazypath = vim.fn.stdpath("data") .. "/lazy/lazy.nvim"
 if not vim.loop.fs_stat(lazypath) then
@@ -45,6 +47,7 @@ require("lazy").setup({
       end
 
       require("neo-tree").setup({
+        -- close_if_last_window = true,
         window = {
           width = 15,
           mappings = {
@@ -154,7 +157,11 @@ require("lazy").setup({
 
   -- LSP config and autocompletion
   {
-    "neovim/nvim-lspconfig", -- quick LSP setup
+    "neovim/nvim-lspconfig", 
+    dependencies = { "williamboman/mason-lspconfig.nvim" },
+    config = function()
+      require("config.lsp")
+    end,
   },
   {
     "williamboman/mason.nvim", -- manage external tools like language servers
@@ -162,6 +169,13 @@ require("lazy").setup({
     config = function()
       require("mason").setup()
     end,
+  },
+
+  {
+    "williamboman/mason-lspconfig.nvim",
+    opts = {
+      ensure_installed = { "emmet_ls" },
+    },
   },
 
   {
@@ -378,6 +392,13 @@ require("lazy").setup({
   },
 
   {
+    "sphamba/smear-cursor.nvim",
+    opts = {
+      trailing_stiffness = 1
+    },
+  },
+
+  {
     "toppair/peek.nvim",
     event = { "VeryLazy" },
     build = "deno task --quiet build:fast",
@@ -410,12 +431,53 @@ vim.keymap.set("n", "<leader>q", function()
   end
 end, { desc = "Close Buffer safely" })
 
-vim.api.nvim_create_autocmd("BufEnter", {
-  group = vim.api.nvim_create_augroup("NeoTreeClose", { clear = true }),
-  callback = function()
-    local layout = vim.api.nvim_call_function("winlayout", {})
-    if layout[1] == "leaf" and vim.bo[vim.api.nvim_win_get_buf(layout[2])].filetype == "neo-tree" and vim.api.nvim_tabpage_list_wins(0)[2] == nil then
-      vim.cmd("confirm quit")
+
+
+-- define the templates as tables of strings
+local templates = {
+  cpp = {
+    "#include <iostream>",
+    "",
+    "int main() {",
+    "    // code here",
+    "    return 0;",
+    "}",
+  },
+  c = {
+    "#include <stdio.h>",
+    "",
+    "int main() {",
+    "    // code here",
+    "    return 0;",
+    "}",
+  }
+}
+
+-- create the autocommand
+local template_group = vim.api.nvim_create_augroup("CppTemplates", { clear = true })
+
+vim.api.nvim_create_autocmd("BufNewFile", {
+  group = template_group,
+  pattern = { "*.cpp", "*.c" },
+  callback = function(args)
+    local ext = vim.fn.expand("%:e")
+    local lines = templates[ext]
+
+    if lines then
+      -- we use vim.schedule to wait for the buffer to be ready
+      vim.schedule(function()
+        if vim.api.nvim_buf_is_valid(args.buf) then
+          -- force modifiable just in case
+          vim.bo[args.buf].modifiable = true
+          
+          -- insert the lines starting at line 0
+          vim.api.nvim_buf_set_lines(args.buf, 0, -1, false, lines)
+          
+          -- move the cursor to the "code here" line (line 4, column 4)
+          -- note: api uses 0-indexed rows, so 3 is the 4th line.
+          pcall(vim.api.nvim_win_set_cursor, 0, { 4, 4 })
+        end
+      end)
     end
   end,
 })
