@@ -437,18 +437,24 @@ end, { desc = "Close Buffer safely" })
 local templates = {
   cpp = {
     "#include <iostream>",
+    "#include <string>",
+    "#include <map>",
+    "#include <vector>",
+    "",
+    "#define ll long long"
     "",
     "int main() {",
-    "    // code here",
-    "    return 0;",
+    "  // templ generation",
+    "  return 0;",
     "}",
   },
   c = {
     "#include <stdio.h>",
     "",
     "int main() {",
-    "    // code here",
-    "    return 0;",
+    "  printf(\"Hello world!\\\n");",
+    "",
+    "  return 0;",
     "}",
   }
 }

@@ -6,7 +6,9 @@ local function setup_server(name, config)
   config.capabilities = capabilities
 
   vim.lsp.config(name, config)
-  vim.lsp.enable(name)
+  if name ~= "emmet_ls" then
+    vim.lsp.enable(name)
+  end
 end
 
 -- simple servers
@@ -27,6 +29,22 @@ end
 setup_server('clangd', {
   cmd = { "clangd", "--background-index", "--clang-tidy", "--fallback-style=Microsoft" }
 })
+
+-- emmet logic
+
+local emmet_active = false
+
+vim.keymap.set('n', '<leader>k', function()
+  if emmet_active then
+    vim.lsp.stop_client(vim.lsp.get_clients({ name = "emmet_ls" }))
+    print("Emmet Stopped")
+    emmet_active = false
+  else
+    vim.lsp.enable("emmet_ls")
+    print("Emmet Started")
+    emmet_active = true
+  end
+end, { desc = "Toggle Emmet LSP" })
 
 -- fixing Rust-Analyzer (Cargo dependencies)
 setup_server('rust_analyzer', {
