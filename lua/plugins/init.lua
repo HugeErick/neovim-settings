@@ -371,22 +371,16 @@ require("lazy").setup({
     "lukas-reineke/indent-blankline.nvim",
     main = "ibl",
     config = function()
-      -- Define the highlight groups to use for the background blocks
-      local highlight = {
-        "CursorColumn",
-        "Whitespace",
-      }
-
       require("ibl").setup({
         indent = { 
-          highlight = highlight, 
-          char = "" -- This removes the dotted character
+          char = "╎" -- This removes the dotted character
+        },
+        scope = {
+          enabled = false,
         },
         whitespace = {
-          highlight = highlight,
-          remove_blankline_trail = false,
+          remove_blankline_trail = true,
         },
-        scope = { enabled = false }, -- Turns off the active scope underline
       })
     end,
   },
@@ -394,7 +388,22 @@ require("lazy").setup({
   {
     "sphamba/smear-cursor.nvim",
     opts = {
-      trailing_stiffness = 1
+      stiffness = 0.8,
+      trailing_stiffness = 0.5,
+      hide_target_hack = true,
+
+    },
+  },
+
+  {
+    "linux-cultist/venv-selector.nvim",
+    dependencies = { "neovim/nvim-lspconfig", "nvim-telescope/telescope.nvim", "mfussenegger/nvim-dap-python" },
+    opts = {
+      name = { "venv", ".venv", "env", ".env" },
+      auto_refresh = true
+    },
+    keys = {
+      { "<leader>vs", "<cmd>VenvSelect<cr>" },
     },
   },
 
@@ -475,10 +484,10 @@ vim.api.nvim_create_autocmd("BufNewFile", {
         if vim.api.nvim_buf_is_valid(args.buf) then
           -- force modifiable just in case
           vim.bo[args.buf].modifiable = true
-          
+
           -- insert the lines starting at line 0
           vim.api.nvim_buf_set_lines(args.buf, 0, -1, false, lines)
-          
+
           -- move the cursor to the "code here" line (line 4, column 4)
           -- note: api uses 0-indexed rows, so 3 is the 4th line.
           pcall(vim.api.nvim_win_set_cursor, 0, { 4, 4 })
