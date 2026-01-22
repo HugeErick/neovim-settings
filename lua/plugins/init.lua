@@ -431,8 +431,13 @@ require("lazy").setup({
 			},
 
 			formatters = {
+
+				-- stylua = {
+				-- 	-- StyLua usually uses a config file, but you can force args like this:
+				-- 	args = { "--indent-width", "2", "--indent-type", "Spaces", "-" },
+				-- },
 				autopep8 = {
-					args = { "--indent-size", "2" },
+					args = { "--indent-size", "2", "-" },
 				},
 			},
 			format_on_save = false, -- Set to true if you want it automatic
@@ -507,6 +512,7 @@ local templates = {
 		"#include <algorithm>",
 		"#include <iterator>",
 		"#include <exception>",
+		"#include <bitset>",
 		"",
 		"#define ll long long",
 		"",
