@@ -176,6 +176,22 @@ require("lazy").setup({
 		end,
 	},
 
+  local servers = {
+    "alex",
+    "autopep8",
+    "beautysh",
+    "bibtex-tidy",
+    "checkmake",
+    "clangd",           
+    "clang-format",
+    "emmet_ls",           
+    "emmylua-codeformat",           
+	  "pyright",          
+	  "rust_analyzer",    	
+    "stylua",
+    "tlint",
+  }
+
 	{
 		"williamboman/mason-lspconfig.nvim",
 		opts = {
@@ -425,22 +441,21 @@ require("lazy").setup({
 	{
 		"stevearc/conform.nvim",
 		opts = {
+      -- all from mason
 			formatters_by_ft = {
-				python = { "autopep8" }, -- autopep8 is very flexible with indent sizes
+        cpp = { "clang-format" },
+        c = { "clang-format" }, 
+				python = { "autopep8" }, 
 				lua = { "stylua" },
 			},
 
 			formatters = {
 
-				-- stylua = {
-				-- 	-- StyLua usually uses a config file, but you can force args like this:
-				-- 	args = { "--indent-width", "2", "--indent-type", "Spaces", "-" },
-				-- },
 				autopep8 = {
 					args = { "--indent-size", "2", "-" },
 				},
 			},
-			format_on_save = false, -- Set to true if you want it automatic
+			format_on_save = false, 
 		},
 		config = function(_, opts)
 			require("conform").setup(opts)
