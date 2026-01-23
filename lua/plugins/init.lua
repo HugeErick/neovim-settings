@@ -528,6 +528,7 @@ local templates = {
 		"#include <iterator>",
 		"#include <exception>",
 		"#include <bitset>",
+		"#include <sstream>",
 		"",
 		"#define ll long long",
 		"",
