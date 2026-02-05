@@ -11,7 +11,6 @@ vim.opt.autoindent = true
 vim.opt.tabstop = 2
 vim.opt.shiftwidth = 2
 vim.opt.autoindent = true
--- vim.opt.indentexpr = "v:lua.vim.treesitter.indent()"
 vim.opt.smarttab = true
 vim.opt.softtabstop = 2
 vim.opt.expandtab = true -- ensure spaces are used instead of tabs
@@ -34,37 +33,11 @@ vim.opt.sidescroll = 1
 vim.opt.hlsearch = false
 vim.opt.ttimeoutlen = 100
 vim.opt.switchbuf = "useopen,usetab"
-
+vim.opt.formatoptions:remove({ "c", "r", "o" })
 -- italics
 vim.cmd([[let &t_ZH="\e[3m"]])
 vim.cmd([[let &t_ZR="\e[23m"]])
 
--- ensure tab settings are applied for all filetypes
-vim.api.nvim_create_autocmd("FileType", {
-	pattern = "*",
-	callback = function()
-		vim.opt.tabstop = 2
-		vim.opt.shiftwidth = 2
-		vim.opt.softtabstop = 2
-		vim.opt.expandtab = true
-		-- vim.opt.formatoptions:remove({ "r", "o" })
-	end,
-})
-
--- for Makefiles, use actual tabs but display as 2 spaces
-vim.api.nvim_create_autocmd("FileType", {
-	pattern = "make",
-	callback = function()
-		vim.opt_local.expandtab = false
-		vim.opt_local.tabstop = 3
-		vim.opt_local.shiftwidth = 2
-		vim.opt_local.softtabstop = 2
-	end,
-})
-
--- key remaps
--- vim.api.nvim_set_keymap('n', '<leader>e', ':Neotree focus<CR>', { noremap = true, silent = true })
--- toggle Neotree focus/close
 vim.api.nvim_set_keymap(
 	"n",
 	"<leader>e",
@@ -75,9 +48,10 @@ vim.api.nvim_set_keymap(
 -- move lines up and down
 vim.keymap.set("n", "<C-k>", ":m -2<CR>", { silent = true })
 vim.keymap.set("n", "<C-j>", ":m +1<CR>", { silent = true })
-
 -- visual block mode
 vim.keymap.set("n", "<C-B>", "<C-v>", { silent = true })
+vim.keymap.set("n", "gt", "<Plug>(cokeline-focus-next)", { silent = true, desc = "Next buffer" })
+vim.keymap.set("n", "gT", "<Plug>(cokeline-focus-prev)", { silent = true, desc = "Previous buffer" })
 
 -- spell Checker Configuration
 vim.opt.spelllang = { "en", "es" } -- Set spell languages to English and Spanish
@@ -103,7 +77,6 @@ end, { desc = "Switch Spell Language (English/Spanish)" })
 -- change windows easier
 vim.keymap.set("n", "<leader>d", "<C-w>w", { noremap = true })
 
-
 -- smart dd: Don't yank empty lines into the default register
 vim.keymap.set("n", "dd", function()
 	if vim.api.nvim_get_current_line():match("^%s*$") then
@@ -112,6 +85,14 @@ vim.keymap.set("n", "dd", function()
 		return "dd"
 	end
 end, { expr = true, desc = "Smart delete line"})
+
+-- stop newline continuation of comments
+vim.api.nvim_create_autocmd("FileType", {
+  pattern = "*",
+  callback = function()
+    vim.opt_local.formatoptions:remove({ "c", "r", "o" })
+  end,
+})
 
 vim.api.nvim_create_autocmd("FileType", {
   pattern = { "c", "cpp" },
@@ -134,4 +115,48 @@ vim.api.nvim_create_autocmd("FileType", {
 	end,
 })
 
+-- for Makefiles, use actual tabs but display as 2 spaces
+vim.api.nvim_create_autocmd("FileType", {
+	pattern = "make",
+	callback = function()
+		vim.opt_local.expandtab = false
+		vim.opt_local.tabstop = 3
+		vim.opt_local.shiftwidth = 2
+		vim.opt_local.softtabstop = 2
+	end,
+})
+
+vim.api.nvim_create_autocmd("FileType", {
+    pattern = "python",
+    callback = function()
+        vim.opt_local.cindent = false
+        vim.opt_local.smartindent = true
+        vim.opt_local.tabstop = 2
+        vim.opt_local.shiftwidth = 2
+        vim.opt_local.softtabstop = 2
+        vim.opt_local.expandtab = true
+    end,
+})
+
+-- ensure tab settings are applied for all filetypes
+vim.api.nvim_create_autocmd("FileType", {
+	pattern = "*",
+	callback = function()
+		vim.opt.tabstop = 2
+		vim.opt.shiftwidth = 2
+		vim.opt.softtabstop = 2
+		vim.opt.expandtab = true
+	end,
+})
+
+-- this tells Neovim: "If you have a Treesitter parser for this file, use it!"
+vim.api.nvim_create_autocmd("FileType", {
+    callback = function()
+        local buf = vim.api.nvim_get_current_buf()
+        -- Only start if we have a parser for this filetype
+        if pcall(vim.treesitter.start, buf) then
+            -- Success: Highlighting is now active
+        end
+    end,
+})
 

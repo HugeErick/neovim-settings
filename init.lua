@@ -6,3 +6,6 @@ require("plugins.init")
 
 -- LSP
 require("config.lsp")
+
+-- templates
+require("config.templates")
