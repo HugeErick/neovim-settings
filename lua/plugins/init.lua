@@ -27,31 +27,12 @@ vim.opt.rtp:prepend(lazypath)
 				"MunifTanjim/nui.nvim",
 			},
       config = function()
-				require("neo-tree").setup({
-					window = {
-						width = 15,
-					},
-					filesystem = {
-						use_libuv_file_watcher = true,
-						bind_to_cwd = false,
-						follow_current_file = {
-							enabled = true,
-						},
-            filtered_items = {
-              visible = true,
-            },
-					},
-				})
-				-- startup
-				vim.api.nvim_create_autocmd("VimEnter", {
-					callback = function()
-						vim.cmd("Neotree show")
-					end,
-				})
-
-				-- keymap(s)
-				vim.keymap.set("n", "<C-t>", ":Neotree toggle<CR>", { silent = true })
-			end,
+        require("neo-tree").setup({
+          window = {
+            width = 18
+          },
+        })
+      end,
 			-- end of neo-tree
 		},
 
@@ -322,7 +303,7 @@ vim.opt.rtp:prepend(lazypath)
 			config = function()
 				require("ibl").setup({
 					indent = {
-						char = "╎", -- This removes the dotted character
+						char = "┊", 
 					},
 					scope = {
 						enabled = false,
@@ -339,7 +320,6 @@ vim.opt.rtp:prepend(lazypath)
 			opts = {
 				stiffness = 0.8,
 				trailing_stiffness = 0.5,
-				hide_target_hack = true,
 			},
 		},
 
@@ -364,7 +344,6 @@ vim.opt.rtp:prepend(lazypath)
 			},
 			config = function(_, opts)
 				require("conform").setup(opts)
-				-- This creates a keymap to format instead of using ggVG=
 				vim.keymap.set("n", "<leader>mp", function()
 					require("conform").format({
 						lsp_fallback = true,
