@@ -258,31 +258,7 @@ vim.opt.rtp:prepend(lazypath)
 			dependencies = { "hrsh7th/nvim-cmp" },
 		},
 
-		-- bufferline (Cokeline)
-		{
-			"willothy/nvim-cokeline",
-			dependencies = {
-				"nvim-lua/plenary.nvim",
-				"nvim-tree/nvim-web-devicons",
-				"stevearc/resession.nvim",
-			},
-			config = function()
-        local hlgroups = require("cokeline.hlgroups")
-        local hl_attr = hlgroups.get_hl_attr
-        require("cokeline").setup({
-          default_hl = {
-            fg = function(buffer)
-              return buffer.is_focused
-                and hl_attr("Normal", "fg")
-                or hl_attr("Comment", "fg")
-            end,
-            bg = hl_attr("ColorColumn", "bg"),
-          },
-        })
-      end,
-		},
-
-		-- nvim-treesitter gigachads
+		-- nvim-treesitter gigachad
 		{
 			"nvim-treesitter/nvim-treesitter",
 			lazy = false,
