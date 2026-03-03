@@ -7,19 +7,6 @@ vim.api.nvim_set_keymap(
 -- visual block mode
 vim.keymap.set("n", "<C-B>", "<C-v>", { silent = true })
 
--- vim.keymap.set("n", "gt", "<Plug>(cokeline-focus-next)", { silent = true, desc = "Next buffer" })
--- vim.keymap.set("n", "gT", "<Plug>(cokeline-focus-prev)", { silent = true, desc = "Previous buffer" })
---
--- vim.keymap.set("n", "<leader>bd", function()
---   local current_buf = vim.api.nvim_get_current_buf()
---   vim.cmd("bprevious")
---   if vim.api.nvim_get_current_buf() == current_buf then
---     vim.cmd("enew")
---   end
-
---   vim.cmd("bdelete " .. current_buf)
--- end, { desc = "Close Buffer (Keep Layout)" })
-
 -- spell Checker Configuration
 vim.opt.spelllang = { "en", "es" } -- Set spell languages to English and Spanish
 vim.opt.spell = false -- Disable spell checking by default

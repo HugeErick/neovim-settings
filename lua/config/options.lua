@@ -90,6 +90,19 @@ vim.api.nvim_create_autocmd("FileType", {
     end,
 })
 
+vim.api.nvim_create_autocmd("FileType", {
+  pattern = { "svelte", "html", "css", "javascript", "typescript", "javascriptreact", "typescriptreact" },
+  callback = function()
+    vim.opt_local.cindent = false
+    vim.opt_local.smartindent = false
+    vim.opt_local.indentexpr = "nvim_treesitter#indent()"
+    vim.opt_local.tabstop = 2
+    vim.opt_local.shiftwidth = 2
+    vim.opt_local.softtabstop = 2
+    vim.opt_local.expandtab = true
+  end,
+})
+
 -- ensure tab settings are applied for all filetypes
 vim.api.nvim_create_autocmd("FileType", {
 	pattern = "*",
