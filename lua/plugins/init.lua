@@ -259,17 +259,23 @@ vim.opt.rtp:prepend(lazypath)
 		},
 
 		-- nvim-treesitter gigachad
+    -- svelte works by installing the following 
+    -- :TSInstall svelte
+    -- :TSInstall html css javascript typescript
 		{
 			"nvim-treesitter/nvim-treesitter",
-			lazy = false,
+      priority = 1000,
+			-- lazy = false,
 			build = ":TSUpdate",
       config = function()
-        require("nvim-treesitter.config").setup({
+        vim.g.nvim_treesitter = {
           ensure_installed = {
             "lua", "typescript", "javascript",
             "html", "css", "svelte",
           },
-        })
+          highlight = { enable = true },
+          indent = { enable = true },
+        }
       end,
 		},
 
