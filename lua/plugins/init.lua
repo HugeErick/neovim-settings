@@ -265,7 +265,6 @@ vim.opt.rtp:prepend(lazypath)
 		{
 			"nvim-treesitter/nvim-treesitter",
       priority = 1000,
-			-- lazy = false,
 			build = ":TSUpdate",
       config = function()
         vim.g.nvim_treesitter = {

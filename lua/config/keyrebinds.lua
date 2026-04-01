@@ -37,3 +37,7 @@ vim.keymap.set("n", "dd", function()
 	end
 end, { expr = true, desc = "Smart delete line"})
 
+
+vim.keymap.set("n", "<leader>n", vim.diagnostic.goto_next, { desc = "Next diagnostic" })
+
+vim.keymap.set("n", "<leader>N", vim.diagnostic.goto_prev, { desc = "Prev diagnostic" })

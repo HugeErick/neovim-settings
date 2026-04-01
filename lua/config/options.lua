@@ -95,23 +95,12 @@ vim.api.nvim_create_autocmd("FileType", {
   callback = function()
     vim.opt_local.cindent = false
     vim.opt_local.smartindent = false
-    vim.opt_local.indentexpr = "nvim_treesitter#indent()"
+    vim.opt_local.indentexpr = ""
     vim.opt_local.tabstop = 2
     vim.opt_local.shiftwidth = 2
     vim.opt_local.softtabstop = 2
     vim.opt_local.expandtab = true
   end,
-})
-
--- ensure tab settings are applied for all filetypes
-vim.api.nvim_create_autocmd("FileType", {
-	pattern = "*",
-	callback = function()
-		vim.opt.tabstop = 2
-		vim.opt.shiftwidth = 2
-		vim.opt.softtabstop = 2
-		vim.opt.expandtab = true
-	end,
 })
 
 -- this tells Neovim: "If you have a Treesitter parser for this file, use it!"
