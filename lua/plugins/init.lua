@@ -79,26 +79,6 @@ vim.opt.rtp:prepend(lazypath)
 			},
 		},
 
-		{
-			"windwp/nvim-ts-autotag",
-			event = "InsertEnter",
-			dependencies = { "nvim-treesitter/nvim-treesitter" },
-			config = function()
-				require("nvim-ts-autotag").setup({
-					filetypes = {
-						"html",
-						"xml",
-						"javascript",
-						"typescript",
-						"javascriptreact",
-						"typescriptreact",
-						"svelte",
-						"vue",
-					},
-				})
-			end,
-		},
-
 		-- LSP config and autocompletion
 		{
 			"neovim/nvim-lspconfig",

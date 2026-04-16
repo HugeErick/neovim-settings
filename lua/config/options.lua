@@ -103,14 +103,27 @@ vim.api.nvim_create_autocmd("FileType", {
   end,
 })
 
--- this tells Neovim: "If you have a Treesitter parser for this file, use it!"
 vim.api.nvim_create_autocmd("FileType", {
+    pattern = "rust",
     callback = function()
-        local buf = vim.api.nvim_get_current_buf()
-        -- Only start if we have a parser for this filetype
-        if pcall(vim.treesitter.start, buf) then
-            -- Success: Highlighting is now active
-        end
+        vim.opt_local.tabstop = 2
+        vim.opt_local.shiftwidth = 2
+        vim.opt_local.softtabstop = 2
+        vim.opt_local.expandtab = true
+        vim.opt_local.cindent = false
     end,
+})
+
+-- this tells Neovim: "If you have a Treesitter parser for this file, use it"
+vim.api.nvim_create_autocmd("FileType", {
+  callback = function()
+    local buf = vim.api.nvim_get_current_buf()
+    local ft = vim.bo[buf].filetype
+    if ft == "" then return end
+    local ok, parser = pcall(vim.treesitter.get_parser, buf, ft)
+    if ok and parser then
+      pcall(vim.treesitter.start, buf, ft)
+    end
+  end,
 })
 

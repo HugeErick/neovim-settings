@@ -70,6 +70,9 @@ setup_server("rust_analyzer", {
 				command = "clippy",
 				extraArgs = { "--", "-A", "clippy::upper_case_acronyms" },
 			},
+      diagnostics = {
+        disabled = { "E0308" },
+      },
 		},
 	},
 })
