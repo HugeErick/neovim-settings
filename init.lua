@@ -1,14 +1,20 @@
--- load options
-require("config.options")
+vim.g.loaded_netrw = 1
+vim.g.loaded_netrwPlugin = 1
 
--- load plugins
-require("plugins.init")
+-- bootstrap Lazy.nvim
+local lazypath = vim.fn.stdpath("data") .. "/lazy/lazy.nvim"
+if not vim.loop.fs_stat(lazypath) then
+  vim.fn.system({
+    "git",
+    "clone",
+    "--filter=blob:none",
+    "https://github.com/folke/lazy.nvim.git",
+    "--branch=stable",
+    lazypath,
+  })
+end
+vim.opt.rtp:prepend(lazypath)
 
--- keybinds
-require("config.keyrebinds")
+-- load world domination
+require("config")
 
--- LSP
-require("config.lsp")
-
--- templates
-require("config.templates")

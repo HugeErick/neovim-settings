@@ -1,25 +1,27 @@
 -- basic settings
+vim.g.mapleader = ","
+vim.g.maplocalleader = ","
 vim.opt.number = true
 vim.opt.relativenumber = true
 vim.opt.clipboard = "unnamedplus" -- system clipboard integration
-vim.g.mapleader = ","
-vim.g.maplocalleader = ","
-vim.opt.encoding = "UTF-8"
+vim.opt.showcmd = true
+vim.opt.mouse = "a"
+vim.opt.cursorline = true
+vim.opt.autoread = true
 vim.opt.termguicolors = true
-vim.cmd("filetype plugin indent on") -- corrected line (Vimscript command)
-vim.opt.autoindent = true
+
 vim.opt.tabstop = 2
 vim.opt.shiftwidth = 2
-vim.opt.autoindent = true
+vim.opt.autoindent = false
 vim.opt.smarttab = true
-vim.opt.softtabstop = 2
-vim.opt.expandtab = true -- ensure spaces are used instead of tabs
-vim.opt.mouse = "a"
+vim.opt.cindent = false
 vim.opt.smartindent = false
-vim.opt.cindent = true
-vim.opt.backup = false -- corrected line
-vim.opt.writebackup = false -- corrected line
-vim.opt.swapfile = false -- corrected line
+vim.opt.softtabstop = 2
+vim.opt.expandtab = true
+
+vim.opt.backup = false
+vim.opt.writebackup = false
+vim.opt.swapfile = false
 vim.opt.backspace = "indent,eol,start"
 vim.opt.title = true
 vim.opt.ttyfast = true
@@ -33,10 +35,6 @@ vim.opt.sidescroll = 1
 vim.opt.hlsearch = false
 vim.opt.ttimeoutlen = 100
 vim.opt.switchbuf = "useopen,usetab"
-vim.opt.formatoptions:remove({ "c", "r", "o" })
--- italics
-vim.cmd([[let &t_ZH="\e[3m"]])
-vim.cmd([[let &t_ZR="\e[23m"]])
 
 -- stop newline continuation of comments
 vim.api.nvim_create_autocmd("FileType", {
@@ -49,53 +47,38 @@ vim.api.nvim_create_autocmd("FileType", {
 vim.api.nvim_create_autocmd("FileType", {
   pattern = { "c", "cpp" },
   callback = function()
-	-- Standard indentation settings
-	vim.opt_local.tabstop = 2
-	vim.opt_local.shiftwidth = 2 	
-	vim.opt_local.softtabstop = 2	
-	vim.opt_local.expandtab = true
+    -- Standard indentation settings
+    vim.opt_local.tabstop = 2
+    vim.opt_local.shiftwidth = 2
+    vim.opt_local.softtabstop = 2
+    vim.opt_local.expandtab = true
 
-	-- C-specific indent options
-	vim.opt_local.cinoptions = "g0,:0,l1,(0,Ws,m1"
-	-- Explanation:
-	-- g0 = No indent for C++ scope declarations (public:, private:)
-	-- :0 = No indent for case labels
-	-- l1 = Align with case label instead of statement after it
-	-- (0 = Line up with next character after unclosed parentheses
-	-- Ws = Indent in unclosed parentheses when they end with whitespace
-	-- m1 = Line up closing parenthesis with first character of line with opening
-	end,
+    -- C-specific indent options
+    vim.opt_local.cinoptions = "g0,:0,l1,(0,Ws,m1"
+    -- Explanation:
+    -- g0 = No indent for C++ scope declarations (public:, private:)
+    -- :0 = No indent for case labels
+    -- l1 = Align with case label instead of statement after it
+    -- (0 = Line up with next character after unclosed parentheses
+    -- Ws = Indent in unclosed parentheses when they end with whitespace
+    -- m1 = Line up closing parenthesis with first character of line with opening
+  end,
 })
 
 -- for Makefiles, use actual tabs but display as 2 spaces
 vim.api.nvim_create_autocmd("FileType", {
-	pattern = "make",
-	callback = function()
-		vim.opt_local.expandtab = false
-		vim.opt_local.tabstop = 3
-		vim.opt_local.shiftwidth = 2
-		vim.opt_local.softtabstop = 2
-	end,
-})
-
-vim.api.nvim_create_autocmd("FileType", {
-    pattern = "python",
-    callback = function()
-        vim.opt_local.cindent = false
-        vim.opt_local.smartindent = true
-        vim.opt_local.tabstop = 2
-        vim.opt_local.shiftwidth = 2
-        vim.opt_local.softtabstop = 2
-        vim.opt_local.expandtab = true
-    end,
-})
-
-vim.api.nvim_create_autocmd("FileType", {
-  pattern = { "svelte", "html", "css", "javascript", "typescript", "javascriptreact", "typescriptreact" },
+  pattern = "make",
   callback = function()
-    vim.opt_local.cindent = false
-    vim.opt_local.smartindent = false
-    vim.opt_local.indentexpr = ""
+    vim.opt_local.expandtab = false
+    vim.opt_local.tabstop = 3
+    vim.opt_local.shiftwidth = 2
+    vim.opt_local.softtabstop = 2
+  end,
+})
+
+vim.api.nvim_create_autocmd("FileType", {
+  pattern = "python",
+  callback = function()
     vim.opt_local.tabstop = 2
     vim.opt_local.shiftwidth = 2
     vim.opt_local.softtabstop = 2
@@ -104,26 +87,12 @@ vim.api.nvim_create_autocmd("FileType", {
 })
 
 vim.api.nvim_create_autocmd("FileType", {
-    pattern = "rust",
-    callback = function()
-        vim.opt_local.tabstop = 2
-        vim.opt_local.shiftwidth = 2
-        vim.opt_local.softtabstop = 2
-        vim.opt_local.expandtab = true
-        vim.opt_local.cindent = false
-    end,
-})
-
--- this tells Neovim: "If you have a Treesitter parser for this file, use it"
-vim.api.nvim_create_autocmd("FileType", {
+  pattern = "rust",
   callback = function()
-    local buf = vim.api.nvim_get_current_buf()
-    local ft = vim.bo[buf].filetype
-    if ft == "" then return end
-    local ok, parser = pcall(vim.treesitter.get_parser, buf, ft)
-    if ok and parser then
-      pcall(vim.treesitter.start, buf, ft)
-    end
+    vim.opt_local.tabstop = 2
+    vim.opt_local.shiftwidth = 2
+    vim.opt_local.softtabstop = 2
+    vim.opt_local.expandtab = true
+    vim.opt_local.cindent = false
   end,
 })
-
