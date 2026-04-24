@@ -40,6 +40,16 @@ require("lazy").setup({
   -- mason lsp-config
   {
     "williamboman/mason-lspconfig.nvim",
+    config = function()
+      require("mason-lspconfig").setup({
+        ensure_installed = {
+          "lua_ls", "ts_ls", "jsonls",
+          "emmet_ls", "html", "cssls",
+          "svelte", "clangd", "pyright",
+          "rust_analyzer", "marksman",
+        },
+      })
+    end,
   },
   -- lspconfig
   {
@@ -89,9 +99,6 @@ require("lazy").setup({
     config = function ()
       require("config.peekConfig")
     end,
-  },
-  {
-    "leafOfTree/vim-svelte-plugin"
   },
   -- colorscheme
   {

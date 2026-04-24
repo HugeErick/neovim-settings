@@ -21,7 +21,7 @@ vim.lsp.config('lua_ls', {
   }
 })
 
--- Rust (replaces your old setup_server call)
+-- rust 
 vim.lsp.config('rust_analyzer', {
   settings = {
     ["rust-analyzer"] = {
@@ -37,11 +37,81 @@ vim.lsp.config('rust_analyzer', {
   },
 })
 
+
+-- css
+vim.lsp.config('cssls', {
+  capabilities = capabilities,
+  settings = {
+    css = {
+      validate = true,
+      lint = {
+        unknownAtRules = "ignore",
+      },
+    },
+    scss = {
+      validate = true,
+      lint = {
+        unknownAtRules = "ignore",
+      },
+    },
+    less = {
+      validate = true,
+      lint = {
+        unknownAtRules = "ignore",
+      },
+    },
+  },
+})
+
+-- svelte 
+local svelte_capabilities = vim.tbl_deep_extend("force", {}, capabilities)
+svelte_capabilities.workspace = { didChangeWatchedFiles = false }  -- CRITICAL FIX
+vim.lsp.config('svelte', {
+  capabilities = svelte_capabilities,
+  filetypes = { "svelte" },
+  settings = {
+    svelte = {
+      plugin = {
+        svelte = {
+          defaultScriptLanguage = "ts",
+        },
+      },
+    },
+  },
+})
+
+-- emmet ls 
+vim.lsp.config('emmet_ls', {
+  capabilities = capabilities,
+  filetypes = {
+    "html",
+    "css",
+    "svelte",
+    "scss",
+    "less",
+    "javascript",
+    "javascriptreact",
+    "typescript",
+    "typescriptreact",
+    "vue",
+  },
+  settings = {
+    emmet = {
+      preferences = {
+        -- Your custom preferences (converted from init_options)
+        ["bem.enabled"] = true,
+        ["output.inlineBreak"] = 1,
+      },
+    },
+  },
+})
+
 -- enable the servers
 -- It auto-starts the server when you open a matching filetype.
 vim.lsp.enable({ 
   "lua_ls",       -- lua
   "ts_ls",        -- typescript, javascript, tsx
+  "eslint-lsp",
   "tailwindcss",  -- html/css/react
   "rust_analyzer",-- rust
   "clangd",       -- c, cpp
@@ -52,8 +122,7 @@ vim.lsp.enable({
   "marksman",     -- markdown
 })
 
--- 5. LSP Keybindings & Autocmds
--- This remains the modern way to handle buffer-local settings.
+-- LSP keybindings & autocmds
 vim.api.nvim_create_autocmd('LspAttach', {
   group = vim.api.nvim_create_augroup('UserLspConfig', {}),
   callback = function(ev)
