@@ -127,15 +127,18 @@ function SvelteIndent()
   while node do
     local t = node:type()
     if t == 'script_element' or t == 'style_element' then
-      -- the start_tag and end_tag are direct children of script_element
-      -- they should not get extra indent
       local ct = node:named_descendant_for_range(lnum, 0, lnum, 0):type()
       if ct == 'start_tag' or ct == 'end_tag' or ct == 'tag_name' then
         return base
       end
-      -- content inside: offset by shiftwidth relative to script_element's own indent
+
       local _, script_col = node:start()
-      return script_col + vim.bo.shiftwidth
+      local sw = vim.bo.shiftwidth
+      -- TS computed `base` thinking the script content starts at col 0.
+      -- The actual baseline should be script_col + sw.
+      -- So we add that offset, but subtract sw once because TS already
+      -- added one level for being inside the program node.
+      return base + script_col
     end
     if t == 'document' then break end
     node = node:parent()
