@@ -47,7 +47,19 @@ require("telescope").setup({
       end,
     },
   },
+  extensions = {
+    frecency = {
+      show_unindexed = true,
+      ignore_patterns = { "*.git/*", "*/tmp/*", "*/node_modules/*" },
+    },
+  },
 })
 
-vim.keymap.set("n", "<leader>f", builtin.find_files, { desc = "Find files" })
+require("telescope").load_extension("frecency")
+
+vim.keymap.set("n", "<leader>f", function()
+  require("telescope").extensions.frecency.frecency({
+    workspace = "CWD",
+  })
+end, { desc = "Frecency files (cwd)" })
 

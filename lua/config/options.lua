@@ -104,34 +104,38 @@ vim.api.nvim_create_autocmd("FileType", {
   callback = function()
     vim.schedule(function()
       vim.treesitter.start()
+      vim.bo.indentexpr = "v:lua.SvelteIndent()"
     end)
-    vim.bo.indentexpr = "v:lua.SvelteIndent()"
   end,
 })
 
 function SvelteIndent()
-  -- get the treesitter indent result
   local ok, base = pcall(function()
     return require('nvim-treesitter').indentexpr()
   end)
   if not ok or base == nil then base = 0 end
 
-  -- check if current line is inside a script_element or style_element
   local parser = vim.treesitter.get_parser(0, 'svelte')
   if not parser then return base end
   local tree = parser:parse()[1]
   if not tree then return base end
 
-  local lnum = vim.v.lnum - 1  -- 0-indexed
+  local lnum = vim.v.lnum - 1
   local root = tree:root()
   local node = root:named_descendant_for_range(lnum, 0, lnum, 0)
 
   while node do
     local t = node:type()
     if t == 'script_element' or t == 'style_element' then
-      local sw = vim.bo.shiftwidth
-      -- only correct when TS thinks indent is 0 (it doesn't know about the script wrapper)
-      return base + sw
+      -- the start_tag and end_tag are direct children of script_element
+      -- they should not get extra indent
+      local ct = node:named_descendant_for_range(lnum, 0, lnum, 0):type()
+      if ct == 'start_tag' or ct == 'end_tag' or ct == 'tag_name' then
+        return base
+      end
+      -- content inside: offset by shiftwidth relative to script_element's own indent
+      local _, script_col = node:start()
+      return script_col + vim.bo.shiftwidth
     end
     if t == 'document' then break end
     node = node:parent()

@@ -100,6 +100,10 @@ require("lazy").setup({
       require("config.peekConfig")
     end,
   },
+  {
+    "nvim-telescope/telescope-frecency.nvim",
+    dependencies = { "nvim-telescope/telescope.nvim" },
+  },
   -- colorscheme
   {
     "folke/tokyonight.nvim",
