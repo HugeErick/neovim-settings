@@ -10,6 +10,7 @@ local templates = {
 		"#include <exception>",
 		"#include <bitset>",
 		"#include <sstream>",
+		"#include <cstdio>",
 		"",
 		"#define ll long long",
 		"",
