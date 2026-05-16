@@ -13,7 +13,7 @@ local templates = {
 		"",
 		"#define ll long long",
 		"",
-		"using namespace std",
+		"using namespace std;",
 		"",
 		"int main() {",
 		"  // templ generation",
