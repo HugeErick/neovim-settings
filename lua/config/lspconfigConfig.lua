@@ -30,7 +30,10 @@ vim.lsp.config('rust_analyzer', {
       checkOnSave = true,
       check = {
         command = "clippy",
-        extraArgs = { "--", "-A", "clippy::upper_case_acronyms" },
+        extraArgs = {
+          "--", "-A", "clippy::upper_case_acronyms",
+          "-A", "clippy::collapsible_if"
+        },
       },
       diagnostics = { disabled = { "E0308" } },
     },
