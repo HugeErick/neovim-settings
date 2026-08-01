@@ -47,6 +47,7 @@ require("lazy").setup({
           "emmet_ls", "html", "cssls",
           "svelte", "clangd", "pyright",
           "rust_analyzer", "marksman",
+          "taplo", "tailwindcss", "eslint",
         },
       })
     end,

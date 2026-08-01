@@ -26,12 +26,4 @@ require("nvim-tree").setup({
   },
 })
 
--- open nvim-tree when nvim starts 
-vim.api.nvim_create_autocmd("VimEnter", {
-  callback = function()
-    require("nvim-tree.api").tree.open()
-    vim.cmd("wincmd l")
-  end,
-})
-
 vim.keymap.set('n', '<leader>e', ':NvimTreeToggle<CR>', { desc = 'Toggle NvimTree' })
