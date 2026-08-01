@@ -18,6 +18,12 @@ require("nvim-tree").setup({
     custom = { "node_modules" },
     exclude = {},
   },
+  tab = {
+    sync = {
+      open = true,
+      close = true,
+    },
+  },
 })
 
 -- open nvim-tree when nvim starts 
