@@ -68,7 +68,7 @@ vim.lsp.config('cssls', {
 
 -- svelte 
 local svelte_capabilities = vim.tbl_deep_extend("force", {}, capabilities)
-svelte_capabilities.workspace = { didChangeWatchedFiles = false }  -- CRITICAL FIX
+svelte_capabilities.workspace = { didChangeWatchedFiles = false }
 vim.lsp.config('svelte', {
   capabilities = svelte_capabilities,
   filetypes = { "svelte" },
@@ -111,7 +111,7 @@ vim.lsp.config('emmet_ls', {
 
 -- enable the servers
 -- It auto-starts the server when you open a matching filetype.
-vim.lsp.enable({ 
+vim.lsp.enable({
   "lua_ls",       -- lua
   "ts_ls",        -- typescript, javascript, tsx
   "eslint-lsp",

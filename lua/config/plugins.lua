@@ -48,6 +48,7 @@ require("lazy").setup({
           "svelte", "clangd", "pyright",
           "rust_analyzer", "marksman",
           "taplo", "tailwindcss", "eslint",
+          "tombi",
         },
       })
     end,
