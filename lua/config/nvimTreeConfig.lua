@@ -1,3 +1,5 @@
+-- https://github.com/nvim-tree/nvim-tree.lua
+
 require("nvim-tree").setup({
   sort_by = "case_sensitive",
   view = {
@@ -5,6 +7,10 @@ require("nvim-tree").setup({
   },
   renderer = {
     group_empty = true,
+  },
+  update_focused_file = {
+    enable = true,
+    update_root = false,
   },
   git = {
     enable = true,

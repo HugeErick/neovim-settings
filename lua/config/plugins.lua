@@ -143,6 +143,22 @@ require("lazy").setup({
       distance_stop_animation = 0.5,
     },
   },
+  {
+    "folke/persistence.nvim",
+    event = "BufReadPre",
+    opts = {},
+  },
+  -- startup dashboard
+  {
+    "goolord/alpha-nvim",
+    dependencies = {
+      "nvim-tree/nvim-web-devicons",
+      "nvim-mini/mini.icons"
+    },
+    config = function ()
+      require("config.alphaConfig")
+    end,
+  },
   -- venvs acknowledge
   {
     "linux-cultist/venv-selector.nvim",
