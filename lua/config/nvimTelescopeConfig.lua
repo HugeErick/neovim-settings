@@ -35,7 +35,6 @@ require("telescope").setup({
     },
   },
   pickers = {
-    -- Customize specific pickers
     find_files = {
       hidden = true,  -- Show hidden files
       no_ignore = true,
@@ -63,3 +62,6 @@ vim.keymap.set("n", "<leader>f", function()
   })
 end, { desc = "Frecency files (cwd)" })
 
+vim.keymap.set("n", "<leader>h", builtin.lsp_workspace_symbols, { desc = "Find workspace symbols" })
+
+vim.keymap.set("n", "<leader>s", builtin.live_grep, { desc = "Live grep text in project" })
